@@ -33,6 +33,11 @@ WORKDIR /app
 # --------------------------------------------------
 RUN pip install --no-cache-dir --upgrade pip
 
+# Install torchvision and torchaudio matching PyTorch 2.4.0
+RUN pip install --no-cache-dir \
+    torchvision==0.19.0 \
+    torchaudio==2.4.0
+
 # Install Chatterbox TTS
 RUN pip install --no-cache-dir chatterbox-tts
 
@@ -46,10 +51,11 @@ RUN pip install --no-cache-dir \
     huggingface_hub[hf_transfer]
 
 # --------------------------------------------------
-# Pre-download model weights (optional - speeds up cold starts)
-# Comment out if you want to download on first request
+# Pre-download model weights (speeds up cold starts)
+# Using CPU during build since GPU may not be available
+# Model weights are the same, just loaded to CUDA at runtime
 # --------------------------------------------------
-RUN python -c "from chatterbox.tts import ChatterboxTTS; ChatterboxTTS.from_pretrained(device='cuda')" || true
+RUN python -c "from chatterbox.tts import ChatterboxTTS; ChatterboxTTS.from_pretrained(device='cpu')" || echo "Model pre-download skipped, will download on first request"
 
 # --------------------------------------------------
 # Copy handler

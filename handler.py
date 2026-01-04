@@ -80,6 +80,12 @@ DEVICE = check_gpu()
 # --------------------------------------------------
 # Load Chatterbox Model (once at startup)
 # --------------------------------------------------
+import traceback
+
+MODEL = None
+MODEL_ERROR = None
+SAMPLE_RATE = 24000
+
 logger.info("🔄 Loading Chatterbox TTS model...")
 try:
     from chatterbox.tts import ChatterboxTTS
@@ -87,9 +93,9 @@ try:
     SAMPLE_RATE = MODEL.sr
     logger.info(f"✅ Chatterbox TTS loaded (sample rate: {SAMPLE_RATE}Hz)")
 except Exception as e:
-    logger.error(f"❌ Failed to load model: {e}")
-    MODEL = None
-    SAMPLE_RATE = 24000
+    MODEL_ERROR = f"{type(e).__name__}: {str(e)}"
+    logger.error(f"❌ Failed to load model: {MODEL_ERROR}")
+    logger.error(f"❌ Traceback:\n{traceback.format_exc()}")
 
 # --------------------------------------------------
 # Upload to R2/S3
@@ -162,7 +168,7 @@ def handler(job):
     
     # Validate model is loaded
     if MODEL is None:
-        return {"error": "Model failed to load at startup"}
+        return {"error": f"Model failed to load at startup: {MODEL_ERROR}"}
     
     # --------------------------------------------------
     # Extract parameters
