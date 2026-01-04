@@ -33,29 +33,19 @@ WORKDIR /app
 # --------------------------------------------------
 RUN pip install --no-cache-dir --upgrade pip
 
-# Completely reinstall PyTorch stack from official CUDA 12.4 wheels
-# This fixes the torchvision::nms operator issue
+# Replace ANY existing torch installs with matched versions (CUDA 12.1 is backwards compatible)
 RUN pip uninstall -y torch torchvision torchaudio || true && \
     pip install --no-cache-dir \
-    torch==2.4.0+cu124 \
-    torchvision==0.19.0+cu124 \
-    torchaudio==2.4.0+cu124 \
-    --index-url https://download.pytorch.org/whl/cu124
+    torch==2.1.2 \
+    torchvision==0.16.2 \
+    torchaudio==2.1.2 \
+    --index-url https://download.pytorch.org/whl/cu121
 
 # Verify torch installation
-RUN python -c "import torch; print(f'PyTorch {torch.__version__}'); import torchvision; print(f'TorchVision {torchvision.__version__}')"
+RUN python -c "import torch; print(f'PyTorch {torch.__version__}, CUDA: {torch.cuda.is_available()}'); import torchvision; print(f'TorchVision {torchvision.__version__}')"
 
-# Install Chatterbox TTS (without reinstalling torch)
-RUN pip install --no-cache-dir --no-deps chatterbox-tts && \
-    pip install --no-cache-dir \
-    transformers \
-    safetensors \
-    einops \
-    tokenizers \
-    huggingface_hub \
-    s3tokenizer \
-    vocos \
-    perth-watermarker
+# Install Chatterbox TTS
+RUN pip install --no-cache-dir chatterbox-tts
 
 # Install additional dependencies
 RUN pip install --no-cache-dir \
