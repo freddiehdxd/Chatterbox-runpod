@@ -1,0 +1,9 @@
+{
+  "input": {
+    "text": "Hello! This is a test with voice cloning. The voice should match the reference audio.",
+    "audio_prompt": "https://example.com/your-reference-voice.wav",
+    "exaggeration": 0.5,
+    "cfg_weight": 0.5,
+    "output_format": "wav"
+  }
+}

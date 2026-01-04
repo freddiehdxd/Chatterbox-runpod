@@ -1,0 +1,8 @@
+{
+  "input": {
+    "text": "Hello! This is a test of the Chatterbox text-to-speech system. It should sound natural and expressive.",
+    "exaggeration": 0.5,
+    "cfg_weight": 0.5,
+    "output_format": "wav"
+  }
+}
