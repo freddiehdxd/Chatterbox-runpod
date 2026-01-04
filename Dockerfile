@@ -33,10 +33,12 @@ WORKDIR /app
 # --------------------------------------------------
 RUN pip install --no-cache-dir --upgrade pip
 
-# Install torchvision and torchaudio matching PyTorch 2.4.0
-RUN pip install --no-cache-dir \
-    torchvision==0.19.0 \
-    torchaudio==2.4.0
+# Fix torchvision/torchaudio - reinstall from PyTorch CUDA index to fix nms operator issue
+RUN pip uninstall -y torchvision torchaudio || true && \
+    pip install --no-cache-dir --force-reinstall \
+    torchvision==0.19.0+cu124 \
+    torchaudio==2.4.0+cu124 \
+    --index-url https://download.pytorch.org/whl/cu124
 
 # Install Chatterbox TTS
 RUN pip install --no-cache-dir chatterbox-tts
